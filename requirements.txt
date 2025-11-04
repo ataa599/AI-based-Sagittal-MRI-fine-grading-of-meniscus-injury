@@ -1,0 +1,9 @@
+pydicom
+numpy
+pandas
+scikit-learn
+opencv-python
+tqdm
+pylance
+pillow
+# torch

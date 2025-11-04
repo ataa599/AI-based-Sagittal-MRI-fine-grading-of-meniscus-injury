@@ -2,6 +2,7 @@
 
 
 ARTIFACT_DIR: str = "Artifacts"
+random_state = 42
 
 
 """DATA CREATION CONSTANTS"""
@@ -10,13 +11,6 @@ image_root = r"C:\Users\attas\Documents\Queens University Belfast\Thesis\data\da
 NEW_DATASET_DIR: str = "New_Dataset"
 NEW_DATASET_IMAGES = "new_dataset_images"
 NEW_METADATA_CSV = "new_dataset_metadata.csv"
-
-"""DATASET CROPPING CONSTANTS"""
-yolo_model = 'best.pt'
-cropped_artifact_dataset: str = "cropped_roi"
-conf_threshold = 0.3                 # Minimum confidence for detection
-resize_dim = (224, 224)              # Target size (width, height)
-
 # ========================
 # REGION DEFINITIONS
 # ========================
@@ -29,5 +23,19 @@ regions = [
     ("body",          "Body_Injury_Grade",         (0, 1, 0)),
     ("posterior horn","Posterior_Horn_Injury_Grade",(0, 0, 1)),
 ]
+
+
+"""DATASET CROPPING CONSTANTS"""
+yolo_model = 'best.pt'
+cropped_artifact_dataset: str = "cropped_roi"
+conf_threshold = 0.3                 # Minimum confidence for detection
+resize_dim = (224, 224)              # Target size (width, height)
+
+"""DATA SPLITTING CONSTANTS"""
+output_path = "split_dataset"
+n_splits = 5
+train = "train"
+test = "test"
+
 
 

@@ -12,8 +12,10 @@ NEW_DATASET_IMAGES = "new_dataset_images"
 NEW_METADATA_CSV = "new_dataset_metadata.csv"
 
 """DATASET CROPPING CONSTANTS"""
-model_path = 'best.pt'
-
+yolo_model = 'best.pt'
+cropped_artifact_dataset: str = "cropped_roi"
+conf_threshold = 0.3                 # Minimum confidence for detection
+resize_dim = (224, 224)              # Target size (width, height)
 
 # ========================
 # REGION DEFINITIONS

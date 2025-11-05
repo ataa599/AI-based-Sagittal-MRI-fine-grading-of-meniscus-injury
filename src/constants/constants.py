@@ -1,4 +1,5 @@
-
+import torch
+from torchvision import transforms
 
 
 ARTIFACT_DIR: str = "Artifacts"
@@ -36,6 +37,46 @@ output_path = "split_dataset"
 n_splits = 5
 train = "train"
 test = "test"
+
+"""DATA AUGMENTATION CONSTANTS"""
+AUGMENTED_DATASET_DIR: str = "augmented_dataset"
+augmented_images_dir = "augmented_images"
+augmented_metadata_csv = "augmented_metadata.csv"
+chunk_size=50
+
+# Define augmentation strategies (same content, order matters for determinism)
+augmentation_strategies = [
+        transforms.Compose([
+            transforms.RandomResizedCrop((224, 224), scale=(0.92, 1.0), ratio=(0.97, 1.03)),
+            transforms.RandomRotation(10),
+            transforms.ColorJitter(brightness=0.08, contrast=0.12),
+        ]),
+        transforms.Compose([
+            transforms.RandomAffine(degrees=8, translate=(0.02, 0.02), scale=(0.98, 1.02), shear=0),
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 0.8)),
+        ]),
+        transforms.Compose([
+            transforms.RandomPerspective(distortion_scale=0.04, p=0.5),
+            transforms.ColorJitter(contrast=0.15),
+        ]),
+        transforms.Compose([
+            transforms.RandomRotation(8),
+            transforms.ColorJitter(brightness=0.05),
+        ]),
+        transforms.Compose([
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.RandomResizedCrop((224, 224), scale=(0.94, 1.0), ratio=(0.98, 1.02)),
+            transforms.ToTensor(),
+            transforms.RandomErasing(p=0.25, scale=(0.01, 0.05), ratio=(0.3, 3.3), value='random'),
+            transforms.ToPILImage(),
+        ]),
+        transforms.Compose([
+            transforms.RandomAffine(degrees=6, translate=(0.01, 0.01)),
+            transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 1.0)),
+            transforms.ColorJitter(brightness=0.06, contrast=0.1),
+        ]),
+    ]
 
 
 

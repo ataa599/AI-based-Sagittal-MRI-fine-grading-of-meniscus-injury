@@ -4,6 +4,7 @@ from src.logging_and_exception.logger import logging
 from src.data_preprocessing_pipeline.creating_new_dataset import NewDatasetConfig, NewDataset
 from src.data_preprocessing_pipeline.meniscus_cropping import CroppingMeniscusConfig, CroppingMeniscus
 from src.data_preprocessing_pipeline.splitting_dataset import SplittingDatasetConfig, SplittingDataset
+from src.data_preprocessing_pipeline.data_augmentation import DataAugmentationConfig, DataAugmentation
 
 
 if __name__ == "__main__":
@@ -31,6 +32,16 @@ if __name__ == "__main__":
     print(f"Test images saved to: {test_out}")
     print(f"Train CSV saved to: {train_csv}")
     print(f"Test CSV saved to: {test_csv}")
+
+    data_augmentation_config = DataAugmentationConfig(input_image_path=train_out, input_metadata_csv=train_csv)
+    data_augmentation = DataAugmentation(config=data_augmentation_config)
+    logging.info("Starting data augmentation process")
+    augmented_csv, augmented_images = data_augmentation.initiate_augmentation()
+    logging.info("Data augmentation process completed successfully")
+    print(f"Augmented images saved to: {augmented_images}")
+    print(f"Augmented CSV saved to: {augmented_csv}")
+
+
 
 
 

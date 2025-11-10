@@ -80,3 +80,13 @@ augmentation_strategies = [
 
 
 
+batch_size = 16
+num_epochs = 4
+batch_size = 16
+num_classes = 4
+lr_scheduler = 'multistep'
+use_pretrained = False
+epochs = 5
+save_all_epochs = False
+
+

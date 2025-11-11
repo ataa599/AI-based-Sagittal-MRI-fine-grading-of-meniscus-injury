@@ -1,5 +1,5 @@
 from tqdm import tqdm
-from deep_learning_architecture.training_utils.training_logger import log
+from src.deep_learning_architecture.training_utils.training_logger import log
 from sklearn.metrics import precision_recall_fscore_support, f1_score
 import os
 import torch

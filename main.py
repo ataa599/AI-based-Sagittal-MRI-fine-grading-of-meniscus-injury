@@ -5,7 +5,7 @@ from src.data_preprocessing_pipeline.creating_new_dataset import NewDatasetConfi
 from src.data_preprocessing_pipeline.meniscus_cropping import CroppingMeniscusConfig, CroppingMeniscus
 from src.data_preprocessing_pipeline.splitting_dataset import SplittingDatasetConfig, SplittingDataset
 from src.data_preprocessing_pipeline.data_augmentation import DataAugmentationConfig, DataAugmentation
-from deep_learning_architecture.training import TrainingConfig, Trainer
+from src.deep_learning_architecture.training import TrainingConfig, Trainer
 
 
 if __name__ == "__main__":

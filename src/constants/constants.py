@@ -86,7 +86,7 @@ batch_size = 16
 num_classes = 4
 lr_scheduler = 'multistep'
 use_pretrained = False
-epochs = 5
+epochs = 2
 save_all_epochs = False
 
 

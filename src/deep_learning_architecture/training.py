@@ -3,16 +3,16 @@ from src.logging_and_exception.exception import CustomException
 import sys
 from pathlib import Path
 import torch
-from deep_learning_architecture.training_utils.training_logger import Logger, log
+from src.deep_learning_architecture.training_utils.training_logger import Logger, log
 from datetime import datetime
 import os
-from deep_learning_architecture.training_utils.saggitalmeniscusdataset_loader import get_sagittal_data_loaders
-from deep_learning_architecture.training_utils.model import DenseNetSagittalModel
-from deep_learning_architecture.training_utils.config import DenseNetSagittalConfig
+from src.deep_learning_architecture.training_utils.saggitalmeniscusdataset_loader import get_sagittal_data_loaders
+from src.deep_learning_architecture.training_utils.model import DenseNetSagittalModel
+from src.deep_learning_architecture.training_utils.config import DenseNetSagittalConfig
 import torch.optim as optim
 import torch.nn as nn
 from torch.optim.lr_scheduler import CosineAnnealingLR, MultiStepLR
-from deep_learning_architecture.training_utils.trainer import train_epoch, validate
+from src.deep_learning_architecture.training_utils.trainer import train_epoch, validate
 
 class TrainingConfig:
     def __init__(self, train_img_path, test_img_path, train_csv_path, test_csv_path):   

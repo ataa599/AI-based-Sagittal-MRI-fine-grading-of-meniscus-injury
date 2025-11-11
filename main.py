@@ -6,7 +6,7 @@ from src.data_preprocessing_pipeline.meniscus_cropping import CroppingMeniscusCo
 from src.data_preprocessing_pipeline.splitting_dataset import SplittingDatasetConfig, SplittingDataset
 from src.data_preprocessing_pipeline.data_augmentation import DataAugmentationConfig, DataAugmentation
 from src.deep_learning_architecture.training import TrainingConfig, Trainer
-
+from src.inference_pipeline.inference import InferenceEngine
 
 if __name__ == "__main__":
     # create_dataset_config = NewDatasetConfig()
@@ -42,16 +42,31 @@ if __name__ == "__main__":
     # print(f"Augmented images saved to: {augmented_images}")
     # print(f"Augmented CSV saved to: {augmented_csv}")
 
-    augmented_images = "Artifacts\\augmented_dataset\\augmented_images"
-    augmented_csv = "Artifacts\\augmented_dataset\\augmented_metadata.csv"
-    test_out = "Artifacts\\split_dataset\\test"
-    test_csv = "Artifacts\\split_dataset\\test_dataset.csv"
+    # augmented_images = "Artifacts\\augmented_dataset\\augmented_images"
+    # augmented_csv = "Artifacts\\augmented_dataset\\augmented_metadata.csv"
+    # test_out = "Artifacts\\split_dataset\\test"
+    # test_csv = "Artifacts\\split_dataset\\test_dataset.csv"
 
-    model_training_config = TrainingConfig(augmented_images, test_out, augmented_csv, test_csv)
-    training = Trainer(config=model_training_config)
-    logging.info("Starting model training process")
-    training.initiate_training()
-    logging.info("Model training process completed successfully")
+    # model_training_config = TrainingConfig(augmented_images, test_out, augmented_csv, test_csv)
+    # training = Trainer(config=model_training_config)
+    # logging.info("Starting model training process")
+    # training_result_dir = training.initiate_training()
+    # logging.info("Model training process completed successfully")
+    # print(f"Model training artifacts saved to: {training_result_dir}")
+
+    training_result_dir = "Artifacts\\Training_Results"
+
+
+    # infer_folder_dir = "C:/Users/attas/Documents/Queens University Belfast/Thesis/data/data/Image/ANON0B3727ED53/Sagittal"
+    infer_folder_dir = "C:/Users/attas/Documents/Queens University Belfast\Thesis/data/data/Image/ANON1BC4C7A93D/Sagittal"
+    # inferencing = InferenceEngine(model_path=f"{training_result_dir}\\best_f1_model.pth")
+    inferencing = InferenceEngine(model_path='best_f1_model.pth')
+    logging.info("Starting inference process on test dataset")
+    posterior_horn_image, anterior_horn_image, body_image = inferencing.infer_folder(infer_folder_dir)
+    logging.info("Inference process completed successfully")
+    print(f"Inference results: {posterior_horn_image}, {anterior_horn_image}, {body_image}")
+
+
 
 
 

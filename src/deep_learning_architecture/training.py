@@ -191,7 +191,7 @@ class Trainer:
             log(f"\nFinal evaluation using best macro F1 model:")
             model.load_state_dict(torch.load(os.path.join(self.save_dir, f'best_f1_model.pth')))
             _, _, _, all_preds_f1, all_labels_f1 = validate(model, val_loader, criterion, self.device, print_results=True, save_dir=self.save_dir)
-
+            return self.save_dir
 
         except CustomException as e:
             raise CustomException(e, sys)

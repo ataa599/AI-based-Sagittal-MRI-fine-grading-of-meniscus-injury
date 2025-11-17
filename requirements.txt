@@ -9,3 +9,6 @@ pillow
 # torch
 ultralytics
 scikit-learn
+python-multipart
+fastapi
+uvicorn

@@ -1,4 +1,4 @@
-from src.constants.constants import ARTIFACT_DIR, batch_size, epochs, save_all_epochs
+from src.constants.constants import ARTIFACT_DIR, batch_size, epochs, save_all_epochs, model_artifact_dir
 from src.logging_and_exception.exception import CustomException
 import sys
 from pathlib import Path
@@ -33,7 +33,7 @@ class Trainer:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         self.artifact_dir = Path(ARTIFACT_DIR)
-        self.save_dir = self.artifact_dir / "Training_Results"
+        self.save_dir = self.artifact_dir / model_artifact_dir
 
         self.save_dir.mkdir(parents=True, exist_ok=True)
 

@@ -89,4 +89,7 @@ use_pretrained = False
 epochs = 2
 save_all_epochs = False
 
+"""MODEL TRAINING CONSTANTS"""
+model_artifact_dir = "Training_Results"
+best_model_filename = "best_f1_model.pth"
 

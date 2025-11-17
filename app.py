@@ -89,11 +89,16 @@ app = FastAPI()
 # Serve static files (including frontend.html)
 app.mount("/static", StaticFiles(directory=".", html=True), name="static")
 
-# Serve the frontend at the root URL
-@app.get("/")
-def read_frontend():
-    return FileResponse("frontend.html")
 
+def enrich_with_image_and_metadata(image_info: Dict[str, Any]):
+        dicom_path = image_info.get('image_path')
+        image_base64 = convert_dicom_to_png(dicom_path)
+        return {
+            'region': image_info.get('region'),
+            'predicted_severity': image_info.get('predicted_severity'),
+            'confidence': image_info.get('confidence'),
+            'image_base64': image_base64,
+        }
 
 def convert_dicom_to_png(dcm_path) -> 'Image.Image':
     """
@@ -140,16 +145,6 @@ async def infer_folder(zip_file: UploadFile = File(...)):
     extracted_folder = os.path.join(temp_dir, os.listdir(temp_dir)[0])
     inferencing = InferenceEngine(model_path='best_f1_model.pth')
     posterior_horn_image, anterior_horn_image, body_image = inferencing.infer_folder(extracted_folder)
-
-    def enrich_with_image_and_metadata(image_info: Dict[str, Any]):
-        dicom_path = image_info.get('image_path')
-        image_base64 = convert_dicom_to_png(dicom_path)
-        return {
-            'region': image_info.get('region'),
-            'predicted_severity': image_info.get('predicted_severity'),
-            'confidence': image_info.get('confidence'),
-            'image_base64': image_base64,
-        }
 
     result = {
         'posterior_horn_image': enrich_with_image_and_metadata(posterior_horn_image),

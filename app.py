@@ -1,78 +1,3 @@
-# from typing import Annotated
-# from typing import List
-# from fastapi import FastAPI, File, UploadFile
-# from src.inference_pipeline.inference import InferenceEngine
-# import tempfile
-# import shutil
-# import os
-# app = FastAPI()
-
-
-# @app.post("/files/")
-# async def create_file(file: Annotated[bytes, File()]):
-#     return {"file_size": len(file)}
-
-
-# @app.post("/uploadfile/")
-# async def create_upload_file(file: UploadFile):
-#     return {"filename": file.filename}
-
-# @app.post("/infer/")
-# async def infer_image(file: UploadFile):
-#     try:
-#         # Save the uploaded file to a temporary location
-#         temp_file_path = f"temp_{file.filename}"
-#         with open(temp_file_path, "wb") as temp_file:
-#             temp_file.write(await file.read())
-
-#         # Initialize the inference engine with the trained model path
-#         model_path = "best_f1_model.pth"  # Update with your actual model path
-#         inference_engine = InferenceEngine(model_path=model_path)
-
-#         # Perform inference on the uploaded image
-#         results = inference_engine.infer_image(temp_file_path)
-
-#         # Clean up the temporary file
-        
-#         os.remove(temp_file_path)
-
-#         return {"inference_results": results}
-#     except Exception as e:
-#         return {"error": str(e)}
-    
-
-# @app.post("/infer_folder/")
-# async def infer_folder(files: List[UploadFile] = File(...)):
-#     # create a temp dir for this request
-#     temp_dir = tempfile.mkdtemp(prefix="infer_")
-#     try:
-#         # save all uploaded files
-#         saved_paths = []
-#         for upload in files:
-#             save_path = os.path.join(temp_dir, upload.filename)
-#             with open(save_path, "wb") as f:
-#                 f.write(await upload.read())
-#             saved_paths.append((upload.filename, save_path))
-
-#         # initialize inference engine once
-#         model_path = "best_f1_model.pth"
-#         engine = InferenceEngine(model_path=model_path)
-
-#         results = {}
-#         for orig_name, path in saved_paths:
-#             try:
-#                 res = engine.infer_image(path)   # use your existing infer method
-#                 results[orig_name] = {"ok": True, "result": res}
-#             except Exception as e:
-#                 results[orig_name] = {"ok": False, "error": str(e)}
-
-#         return {"results": results}
-#     finally:
-#         # cleanup the temp dir (remove files)
-#         shutil.rmtree(temp_dir, ignore_errors=True)
-
-
-
 from fastapi import FastAPI, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -83,6 +8,10 @@ from typing import Dict, Any
 import pydicom
 from PIL import Image
 from io import BytesIO
+import numpy as np
+from pipelines.preprocess_pipeline import PreprocessPipeline
+from pipelines.training_pipeline import TrainingPipeline
+
 
 app = FastAPI()
 
@@ -105,9 +34,6 @@ def convert_dicom_to_png(dcm_path) -> 'Image.Image':
     Convert a DICOM file into an 8-bit grayscale PNG.
     Uses safe min-max scaling (deterministic).
     """
-    import pydicom
-    import numpy as np
-    from PIL import Image
     ds = pydicom.dcmread(str(dcm_path))      # read DICOM file
     arr = ds.pixel_array.astype(np.float32)  # convert to float for scaling
 
@@ -131,6 +57,14 @@ def convert_dicom_to_png(dcm_path) -> 'Image.Image':
 
     return img_base64
 
+@app.get("/train/")
+async def train_model():
+    preprocessing_pipeline = PreprocessPipeline()
+    augmented_images, augmented_csv, test_out, test_csv = preprocessing_pipeline.start_preprocessing_pipeline()
+    
+    training_pipeline = TrainingPipeline(augmented_images, test_out, augmented_csv, test_csv)
+    training_pipeline.start_training_pipeline()
+    
 
 @app.post("/infer-folder/")
 async def infer_folder(zip_file: UploadFile = File(...)):

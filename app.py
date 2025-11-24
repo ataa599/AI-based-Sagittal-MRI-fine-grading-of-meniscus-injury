@@ -1,6 +1,7 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
 from PIL import Image
 import shutil, zipfile, os, base64
 from src.inference_pipeline.inference import InferenceEngine
@@ -15,8 +16,11 @@ from pipelines.training_pipeline import TrainingPipeline
 
 app = FastAPI()
 
-# Serve static files (including frontend.html)
-app.mount("/static", StaticFiles(directory=".", html=True), name="static")
+# Serve static files (CSS, JS, images)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Setup templates
+templates = Jinja2Templates(directory="templates")
 
 
 def enrich_with_image_and_metadata(image_info: Dict[str, Any]):
@@ -57,13 +61,26 @@ def convert_dicom_to_png(dcm_path) -> 'Image.Image':
 
     return img_base64
 
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/results", response_class=HTMLResponse)
+async def results_page(request: Request):
+    return templates.TemplateResponse("results.html", {"request": request})
+
 @app.get("/train/")
 async def train_model():
-    preprocessing_pipeline = PreprocessPipeline()
-    augmented_images, augmented_csv, test_out, test_csv = preprocessing_pipeline.start_preprocessing_pipeline()
-    
-    training_pipeline = TrainingPipeline(augmented_images, test_out, augmented_csv, test_csv)
-    training_pipeline.start_training_pipeline()
+    try:
+        preprocessing_pipeline = PreprocessPipeline()
+        augmented_images, augmented_csv, test_out, test_csv = preprocessing_pipeline.start_preprocessing_pipeline()
+        
+        training_pipeline = TrainingPipeline(augmented_images, test_out, augmented_csv, test_csv)
+        training_pipeline.start_training_pipeline()
+        
+        return {"status": "success", "message": "Training completed successfully"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
     
 
 @app.post("/infer-folder/")

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meniscus Injury Detection - Results</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Analysis Results</h1>
+            <a href="/" class="back-btn">← Back to Home</a>
+        </header>
+        
+        <main class="results-content">
+            <div id="results" class="results-grid">
+                <!-- Results will be dynamically inserted here -->
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Meniscus Injury Detection System. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+    <script>
+        // Load and display results when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            displayStoredResults();
+        });
+    </script>
+</body>
+</html>

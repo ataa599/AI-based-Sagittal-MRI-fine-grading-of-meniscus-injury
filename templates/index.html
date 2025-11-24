@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meniscus Injury Detection - Home</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI-Based Sagittal MRI Fine-Grading of Meniscus Injury</h1>
+        </header>
+        
+        <main class="home-content">
+            <section class="description">
+                <h2>About This Project</h2>
+                <p>
+                    This application uses advanced deep learning techniques to analyze sagittal MRI images 
+                    and provide fine-grained classification of meniscus injuries. The system processes DICOM 
+                    images and identifies three key regions of the meniscus:
+                </p>
+                <ul>
+                    <li><strong>Posterior Horn:</strong> The back portion of the meniscus</li>
+                    <li><strong>Body:</strong> The central portion of the meniscus</li>
+                    <li><strong>Anterior Horn:</strong> The front portion of the meniscus</li>
+                </ul>
+                <p>
+                    For each region, the AI model predicts the severity of the injury and provides a 
+                    confidence score to assist medical professionals in diagnosis.
+                </p>
+            </section>
+
+            <section class="upload-section">
+                <h2>Upload DICOM Images</h2>
+                <p>Please upload a ZIP file containing DICOM images for analysis.</p>
+                
+                <div class="upload-container">
+                    <input type="file" id="zipInput" accept=".zip" class="file-input">
+                    <label for="zipInput" class="file-label">Choose ZIP File</label>
+                    <button onclick="uploadZip()" class="upload-btn">Analyze Images</button>
+                </div>
+                
+                <div id="status" class="status-message"></div>
+            </section>
+
+            <section class="training-section">
+                <h2>Train Model from Scratch</h2>
+                <p>
+                    This option allows you to retrain the deep learning model from scratch using the complete pipeline. 
+                    The training process includes:
+                </p>
+                <ul>
+                    <li><strong>Data Preprocessing:</strong> Creating new dataset from raw DICOM files and cropping regions of interest</li>
+                    <li><strong>Data Augmentation:</strong> Applying image transformations to increase dataset size and model robustness</li>
+                    <li><strong>Dataset Splitting:</strong> Dividing data into training and testing sets</li>
+                    <li><strong>Model Training:</strong> Training the neural network with validation and performance monitoring</li>
+                </ul>
+                <p>
+                    <strong>Note:</strong> This process is time-intensive and requires significant computational resources. 
+                    It will overwrite the existing trained model.
+                </p>
+                
+                <div class="training-container">
+                    <button onclick="startTraining()" class="training-btn" id="trainBtn" disabled="True">
+                        Start Training Pipeline
+                    </button>
+                </div>
+                
+                <div id="trainingStatus" class="status-message"></div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Meniscus Injury Detection System. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

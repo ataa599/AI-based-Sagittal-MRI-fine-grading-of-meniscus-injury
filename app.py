@@ -92,8 +92,27 @@ async def infer_folder(zip_file: UploadFile = File(...)):
         shutil.copyfileobj(zip_file.file, buffer)
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(temp_dir)
-    # Assuming the folder to infer is the first extracted folder
-    extracted_folder = os.path.join(temp_dir, os.listdir(temp_dir)[0])
+    # Determine the extracted folder safely. The upload zip itself is in
+    # temp_dir, so skip it when searching for the extracted directory.
+    entries = [e for e in os.listdir(temp_dir) if e != os.path.basename(zip_path)]
+    extracted_folder = None
+    for e in entries:
+        full = os.path.join(temp_dir, e)
+        if os.path.isdir(full):
+            extracted_folder = full
+            break
+    if extracted_folder is None:
+        # try infering top-level folder name from Zip namelist
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            namelist = zip_ref.namelist()
+        if namelist:
+            top = namelist[0].split('/')[0]
+            candidate = os.path.join(temp_dir, top)
+            if os.path.isdir(candidate):
+                extracted_folder = candidate
+    if extracted_folder is None:
+        # fallback: use temp_dir itself (extracted files at archive root)
+        extracted_folder = temp_dir
     inferencing = InferenceEngine(model_path='best_f1_model.pth')
     posterior_horn_image, anterior_horn_image, body_image = inferencing.infer_folder(extracted_folder)
 

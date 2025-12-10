@@ -1,37 +1,27 @@
-// Upload functionality
-async function uploadZip() {
-    const input = document.getElementById('zipInput');
+// Analyze hardcoded images functionality
+async function analyzeImages() {
+    console.log('analyzeImages function called');
     const statusDiv = document.getElementById('status');
+    console.log('statusDiv:', statusDiv);
     
-    if (!input.files.length) {
-        showStatus('Please select a ZIP file containing DICOM images.', 'error');
-        return;
-    }
-    
-    const file = input.files[0];
-    
-    // Validate file type
-    if (!file.name.toLowerCase().endsWith('.zip')) {
-        showStatus('Please select a valid ZIP file.', 'error');
-        return;
-    }
-    
-    const formData = new FormData();
-    formData.append('zip_file', file);
-    
-    showStatus('Processing your images... This may take a few moments.', 'processing');
+    showStatus('Processing Sagittal.zip images... This may take a few moments.', 'processing');
     
     try {
-        const response = await fetch('/infer-folder/', {
-            method: 'POST',
-            body: formData
+        console.log('Fetching /infer-hardcoded/');
+        const response = await fetch('/infer-hardcoded/', {
+            method: 'GET'
         });
+        console.log('Response received:', response);
         
         if (!response.ok) {
             throw new Error(`Server error: ${response.status}`);
         }
         
         const data = await response.json();
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
         
         // Store results in sessionStorage
         sessionStorage.setItem('analysisResults', JSON.stringify(data));
@@ -190,19 +180,8 @@ function displayResults(data) {
     resultsContainer.innerHTML = html;
 }
 
-// Update file input label with selected filename
+// DOMContentLoaded event for results page
 document.addEventListener('DOMContentLoaded', () => {
-    const fileInput = document.getElementById('zipInput');
-    const fileLabel = document.querySelector('.file-label');
-    
-    if (fileInput && fileLabel) {
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                const fileName = e.target.files[0].name;
-                fileLabel.textContent = fileName;
-            } else {
-                fileLabel.textContent = 'Choose ZIP File';
-            }
-        });
-    }
+    // Display results if on results page
+    displayStoredResults();
 });

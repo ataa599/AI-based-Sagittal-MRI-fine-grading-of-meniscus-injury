@@ -124,3 +124,56 @@ async def infer_folder(zip_file: UploadFile = File(...)):
 
     shutil.rmtree(temp_dir)
     return result
+
+@app.get("/infer-hardcoded/")
+async def infer_hardcoded():
+    """Analyze images from the hardcoded Sagittal.zip file"""
+    hardcoded_zip = "Sagittal.zip"
+    
+    if not os.path.exists(hardcoded_zip):
+        return {"error": f"Hardcoded zip file '{hardcoded_zip}' not found"}
+    
+    temp_dir = "temp_hardcoded"
+    os.makedirs(temp_dir, exist_ok=True)
+    
+    try:
+        with zipfile.ZipFile(hardcoded_zip, 'r') as zip_ref:
+            zip_ref.extractall(temp_dir)
+        
+        # Determine the extracted folder
+        entries = os.listdir(temp_dir)
+        extracted_folder = None
+        for e in entries:
+            full = os.path.join(temp_dir, e)
+            if os.path.isdir(full):
+                extracted_folder = full
+                break
+        
+        if extracted_folder is None:
+            with zipfile.ZipFile(hardcoded_zip, 'r') as zip_ref:
+                namelist = zip_ref.namelist()
+            if namelist:
+                top = namelist[0].split('/')[0]
+                candidate = os.path.join(temp_dir, top)
+                if os.path.isdir(candidate):
+                    extracted_folder = candidate
+        
+        if extracted_folder is None:
+            extracted_folder = temp_dir
+        
+        inferencing = InferenceEngine(model_path='best_f1_model.pth')
+        posterior_horn_image, anterior_horn_image, body_image = inferencing.infer_folder(extracted_folder)
+
+        result = {
+            'posterior_horn_image': enrich_with_image_and_metadata(posterior_horn_image),
+            'anterior_horn_image': enrich_with_image_and_metadata(anterior_horn_image),
+            'body_image': enrich_with_image_and_metadata(body_image)
+        }
+
+        shutil.rmtree(temp_dir)
+        return result
+    
+    except Exception as e:
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir)
+        return {"error": str(e)}

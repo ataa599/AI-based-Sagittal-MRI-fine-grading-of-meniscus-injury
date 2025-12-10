@@ -145,7 +145,8 @@ Artifacts/
 env.bak/
 venv.bak/
 logs/
-
+README.Docker.md
+gpu_docker.txt
 # Spyder project settings
 .spyderproject
 .spyproject

@@ -32,13 +32,11 @@
             </section>
 
             <section class="upload-section">
-                <h2>Upload DICOM Images</h2>
-                <p>Please upload a ZIP file containing DICOM images for analysis.</p>
+                <h2>Analyze DICOM Images</h2>
+                <p>Click the button below to analyze the Sagittal.zip dataset.</p>
                 
                 <div class="upload-container">
-                    <input type="file" id="zipInput" accept=".zip" class="file-input">
-                    <label for="zipInput" class="file-label">Choose ZIP File</label>
-                    <button onclick="uploadZip()" class="upload-btn">Analyze Images</button>
+                    <button onclick="analyzeImages()" class="upload-btn">Analyze Images</button>
                 </div>
                 
                 <div id="status" class="status-message"></div>
@@ -76,6 +74,6 @@
         </footer>
     </div>
 
-    <script src="/static/js/app.js"></script>
+    <script src="/static/js/app.js?v=2"></script>
 </body>
 </html>

@@ -1,0 +1,89 @@
+# AI-based Sagittal MRI Fine Grading of Meniscus Injury
+
+This project provides an end-to-end solution for preprocessing, training, and inference for fine grading of meniscus injury using sagittal MRI scans. It exposes a FastAPI service for training and inference, and organizes code and artifacts to follow repeatable MLOps practices.
+
+## Architecture
+- FastAPI app (`app.py`) serving web UI and APIs
+- Preprocessing pipeline (`pipelines/preprocess_pipeline.py`) to create, crop, split, and augment data
+- Training pipeline (`pipelines/training_pipeline.py`) to train models
+- Inference pipeline (`src/inference_pipeline/inference.py`) for predictions
+- Deep learning modules (`src/deep_learning_architecture/`) including model, trainer, and config
+- Artifacts folder structure for datasets, splits, and training results
+- Logging and exception handling (`src/logging_and_exception/`)
+
+## Pipelines
+- Preprocess
+
+```mermaid
+flowchart TD
+    A([Start]) --> B[Create Dataset]
+    B -->|output_dir, csv_output_path| C[Crop Meniscus]
+    C -->|cropped_dataset| D[Split Dataset]
+    D -->|train_out, test_out, train_csv, test_csv| E[Data Augmentation]
+
+    E -->|augmented_images, augmented_csv| F([Return])
+    D --> F
+
+    F --> O1[augmented_images]
+    F --> O2[augmented_csv]
+    F --> O3[test_out]
+    F --> O4[test_csv]
+
+    %% Error handling
+    B -.->|on error| X{Exception}
+    C -.->|on error| X
+    D -.->|on error| X
+    E -.->|on error| X
+    X --> Y[CustomException]
+```
+
+- Training
+
+```mermaid
+flowchart TD
+    A([Start]) --> B[Initialize TrainingConfig]
+    
+    subgraph Inputs
+        I1[(augmented_images)]
+        I2[(test_out)]
+        I3[(augmented_csv)]
+        I4[(test_csv)]
+    end
+    I1 --> B
+    I2 --> B
+    I3 --> B
+    I4 --> B
+
+    B --> C[Create Trainer]
+    C --> D[Start Training]
+    D --> E([End: Training completed])
+
+    %% Error handling
+    B -.->|on error| X{Exception}
+    C -.->|on error| X
+    D -.->|on error| X
+    X --> Y[CustomException]
+```
+
+## MLOps Practices
+- Versioned Artifacts: Output data and models stored under `Artifacts/` with clear subfolders (dataset, splits, results)
+- Reproducible Pipelines: Deterministic preprocessing steps encapsulated in configs (`*Config` dataclasses) and pipeline classes
+- Configuration Management: Central config modules (`src/.../training_utils/config.py`) and pipeline configs
+- Logging & Exceptions: Uniform logging and `CustomException` for robust error handling
+- Environment Management: `requirements.txt` and optional `venv` for consistent environments
+- Containerization: `Dockerfile` for reproducible builds and deployment
+- Notebooks to Production: `notebooks/testing.ipynb` for exploration, pipelines for production-ready flow
+- Separation of Concerns: Clear module boundaries (preprocess, training, inference, web)
+
+
+## Data & Artifacts
+- `Artifacts/augmented_dataset/`: augmented images and metadata
+- `Artifacts/split_dataset/`: train/test splits and CSVs
+- `Artifacts/Training_Results/`: models (`best_acc_model.pth`, `best_f1_model.pth`) and logs
+
+## Folder Guide
+- `app.py`: FastAPI server and endpoints
+- `pipelines/`: Preprocess and training orchestration
+- `src/`: Modules for data processing, models, training, logging, inference
+- `static/`, `templates/`: Frontend assets for the web UI
+- `notebooks/`: Experiments and sanity checks

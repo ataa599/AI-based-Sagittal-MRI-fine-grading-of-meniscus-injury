@@ -1,0 +1,22 @@
+flowchart TD
+    A([Start]) --> B[Create Dataset]
+    B -->|output_dir, csv_output_path| C[Crop Meniscus]
+    C -->|cropped_dataset| D[Split Dataset]
+    D -->|train_out, test_out, train_csv, test_csv| E[Data Augmentation]
+
+    E -->|augmented_images, augmented_csv| F([Return])
+    D --> F
+
+    F --> O1[augmented_images]
+    F --> O2[augmented_csv]
+    F --> O3[test_out]
+    F --> O4[test_csv]
+
+    %% Error handling
+    B -.->|on error| X{Exception}
+    C -.->|on error| X
+    D -.->|on error| X
+    E -.->|on error| X
+    X --> Y[CustomException] 
+
+    

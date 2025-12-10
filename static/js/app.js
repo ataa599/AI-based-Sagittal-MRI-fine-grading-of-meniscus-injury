@@ -4,7 +4,7 @@ async function analyzeImages() {
     const statusDiv = document.getElementById('status');
     console.log('statusDiv:', statusDiv);
     
-    showStatus('Processing Sagittal.zip images... This may take a few moments.', 'processing');
+    showStatus('Processing images... This may take a few moments.', 'processing');
     
     try {
         console.log('Fetching /infer-hardcoded/');

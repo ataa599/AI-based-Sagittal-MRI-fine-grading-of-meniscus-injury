@@ -1,0 +1,23 @@
+flowchart TD
+    A([Start]) --> B[Initialize TrainingConfig]
+    
+    subgraph Inputs
+        I1[(augmented_images)]
+        I2[(test_out)]
+        I3[(augmented_csv)]
+        I4[(test_csv)]
+    end
+    I1 --> B
+    I2 --> B
+    I3 --> B
+    I4 --> B
+
+    B --> C[Create Trainer]
+    C --> D[Start Training]
+    D --> E([End: Training completed])
+
+    %% Error handling
+    B -.->|on error| X{Exception}
+    C -.->|on error| X
+    D -.->|on error| X
+    X --> Y[CustomException]

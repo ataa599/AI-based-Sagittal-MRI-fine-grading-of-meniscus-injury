@@ -1,5 +1,12 @@
 # AI-based Sagittal MRI Fine Grading of Meniscus Injury
 
+This application uses deep learning to analyze sagittal MRI slices of the knee and provide fine-grained classification of meniscus injuries to assist clinicians and reduce workload. The system processes DICOM images and identifies three anatomical regions of the meniscus:
+
+- **Posterior horn:** the back portion of the meniscus
+- **Body:** the central portion of the meniscus
+- **Anterior horn:** the front portion of the meniscus
+
+For each region, the AI model predicts injury severity and provides a confidence score to aid clinical diagnosis.
 This project provides an end-to-end solution for preprocessing, training, and inference for fine grading of meniscus injury using sagittal MRI scans. It exposes a FastAPI service for training and inference, and organizes code and artifacts to follow repeatable MLOps practices.
 
 ## Architecture
@@ -11,8 +18,11 @@ This project provides an end-to-end solution for preprocessing, training, and in
 - Artifacts folder structure for datasets, splits, and training results
 - Logging and exception handling (`src/logging_and_exception/`)
 
+## Demo Video
+![Watch the demo video](./demo.gif)
+
 ## Pipelines
-- Preprocess
+1. Preprocess
 
 ```mermaid
 flowchart TD
@@ -20,6 +30,7 @@ flowchart TD
     B -->|output_dir, csv_output_path| C[Crop Meniscus]
     C -->|cropped_dataset| D[Split Dataset]
     D -->|train_out, test_out, train_csv, test_csv| E[Data Augmentation]
+    Custom_YOLO_Model -->|Fine-tuned YOLO model for Meniscus Detection| C
 
     E -->|augmented_images, augmented_csv| F([Return])
     D --> F
@@ -37,7 +48,7 @@ flowchart TD
     X --> Y[CustomException]
 ```
 
-- Training
+2. Training
 
 ```mermaid
 flowchart TD
@@ -56,7 +67,8 @@ flowchart TD
 
     B --> C[Create Trainer]
     C --> D[Start Training]
-    D --> E([End: Training completed])
+    D --> E([Training completed])
+    E --> F([Save best model classifier for inference])
 
     %% Error handling
     B -.->|on error| X{Exception}

@@ -1,0 +1,45 @@
+# Exclude large datasets, artifacts, logs, caches, and notebooks from Docker context
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.env/
+.venv/
+venv/
+
+# Logs and temp
+logs/
+*.log
+
+# Notebooks (usually not needed in runtime image)
+notebooks/
+
+# Artifacts and datasets
+Artifacts/
+Artifacts/**
+
+# Static training results and large models (keep only what you need)
+# best.pt
+# best_f1_model.pth
+Artifacts/Training_Results/
+Artifacts/Training_Results/**
+
+# Node/npm caches if any
+node_modules/
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile*
+.dockerignore
+
+# VSCode and editor files
+.vscode/
+*.swp
+*.swo

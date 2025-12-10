@@ -1,0 +1,50 @@
+```mermaid.radar
+flowchart TD
+    A([Start]) --> B{Request}
+    B -->|/infer-folder| C[Receive ZIP upload]
+    B -->|/infer-hardcoded| D[Load Sagittal.zip]
+
+    C --> E[Save to temp dir]
+    D --> E
+    E --> F[Extract ZIP]
+    F --> G[Resolve extracted folder]
+
+    G --> H[Init InferenceEngine]
+
+    subgraph InferenceEngine
+        H --> I[Load DenseNet weights: best_f1_model.pth]
+        H --> J{YOLO path available?}
+        J -->|yes| K[Load YOLO model]
+        J -->|no| L[Skip detection]
+    end
+
+    G --> M[List images by extensions]
+    M --> N[For each image]
+    N --> O[Load DICOM images ]
+    O --> P{YOLO available}
+    P -->|yes| Q[Detect ROI and crop]
+    P -->|no| R[Use original image]
+    Q --> S[Transform -> 224x224 tensor]
+    R --> S
+
+    S --> T[Predict per region]
+    T --> U[Select region with max confidence]
+    U --> V[Collect path, region, severity and confidence]
+    V --> W{More images?}
+    W -->|yes| N
+    W -->|no| X[Pick top image per region by confidence]
+
+    X --> Y[Convert selected images to base64 PNG]
+    Y --> Z[Build response JSON]
+    Z --> AA[Cleanup temp dir]
+    AA --> AB([End])
+
+    subgraph Outputs
+        Z --> O1[posterior_horn_image]
+        Z --> O2[anterior_horn_image]
+        Z --> O3[body_image]
+        O1 --> F1{region, predicted_severity, confidence, image_base64}
+        O2 --> F2{region, predicted_severity, confidence, image_base64}
+        O3 --> F3{region, predicted_severity, confidence, image_base64}
+    end
+```

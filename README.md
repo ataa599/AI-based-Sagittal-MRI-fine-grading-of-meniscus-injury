@@ -9,6 +9,16 @@ This application uses deep learning to analyze sagittal MRI slices of the knee a
 For each region, the AI model predicts injury severity and provides a confidence score to aid clinical diagnosis.
 This project provides an end-to-end solution for preprocessing, training, and inference for fine grading of meniscus injury using sagittal MRI scans. It exposes a FastAPI service for training and inference, and organizes code and artifacts to follow repeatable MLOps practices.
 
+## Demo Video
+![Watch the demo video](./demo.gif)
+
+## Live Demo
+The application is hosted here:
+
+- Live Space: [AI-based Sagittal MRI Fine Grading of Meniscus Injury](https://huggingface.co/spaces/ataa599/AI-based-Sagittal-MRI-Fine-Grading-of-Meniscus-Injury)
+
+Note: This is a computationally intensive pipeline (YOLO ROI detection + DenseNet classification on DICOMs). On CPU-only hardware (no GPUs available on the hosted space), a single end-to-end run may take approximately 15–20 minutes to execute. Please be patient while the inference completes.
+
 ## Architecture
 - FastAPI app (`app.py`) serving web UI and APIs
 - Preprocessing pipeline (`pipelines/preprocess_pipeline.py`) to create, crop, split, and augment data
@@ -18,8 +28,6 @@ This project provides an end-to-end solution for preprocessing, training, and in
 - Artifacts folder structure for datasets, splits, and training results
 - Logging and exception handling (`src/logging_and_exception/`)
 
-## Demo Video
-![Watch the demo video](./demo.gif)
 
 ## Pipelines
 1. Preprocess
@@ -75,6 +83,56 @@ flowchart TD
     C -.->|on error| X
     D -.->|on error| X
     X --> Y[CustomException]
+```
+3. Inferencing
+```mermaid
+flowchart TD
+    A([Start]) --> B{Request}
+    B -->|infer-hardcoded| D[Load Sagittal.zip]
+
+    C --> E[Save to temp dir]
+    D --> E
+    E --> F[Extract ZIP]
+    F --> G[Resolve extracted folder]
+
+    G --> H[Init InferenceEngine]
+
+    subgraph InferenceEngine
+        H --> I[Load DenseNet weights: best_f1_model.pth]
+        H --> J{YOLO path available?}
+        J -->|yes| K[Load YOLO model]
+        J -->|no| L[Skip detection]
+    end
+
+    G --> M[List images by extensions]
+    M --> N[For each image]
+    N --> O[Load DICOM images ]
+    O --> P{YOLO available}
+    P -->|yes| Q[Detect ROI and crop]
+    P -->|no| R[Use original image]
+    Q --> S[Transform -> 224x224 tensor]
+    R --> S
+
+    S --> T[Predict per region]
+    T --> U[Select region with max confidence]
+    U --> V[Collect path, region, severity and confidence]
+    V --> W{More images?}
+    W -->|yes| N
+    W -->|no| X[Pick top image per region by confidence]
+
+    X --> Y[Convert selected images to base64 PNG]
+    Y --> Z[Build response JSON]
+    Z --> AA[Cleanup temp dir]
+    AA --> AB([End])
+
+    subgraph Outputs
+        Z --> O1[posterior_horn_image]
+        Z --> O2[anterior_horn_image]
+        Z --> O3[body_image]
+        O1 --> F1{region, predicted_severity, confidence, image_base64}
+        O2 --> F2{region, predicted_severity, confidence, image_base64}
+        O3 --> F3{region, predicted_severity, confidence, image_base64}
+    end
 ```
 
 ## MLOps Practices

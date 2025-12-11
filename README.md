@@ -88,7 +88,7 @@ flowchart TD
 ```mermaid
 flowchart TD
     A([Start]) --> B{Request}
-    B -->|infer-hardcoded| D[Load Sagittal.zip]
+    B -->|infer-folder| D[Load Sagittal.zip]
 
     C --> E[Save to temp dir]
     D --> E
